@@ -24,11 +24,7 @@ public class BookDaoImplTests {
     @Test
     public void testThatCreateBookGeneratesCorrectSql(){
 
-        Book book = Book.builder()
-                .isbn("978-1-2345-6789-0")
-                .title("The Shadow in the Attic")
-                .authorId(1L)
-                .build();
+        Book book = createTestBook();
 
         underTest.create(book);
 
@@ -39,9 +35,20 @@ public class BookDaoImplTests {
                 eq(1L)
         );
     }
+
+    private static Book createTestBook() {
+        return Book.builder()
+                .isbn("978-1-2345-6789-0")
+                .title("The Shadow in the Attic")
+                .authorId(1L)
+                .build();
+    }
+
+
+
     @Test
     public void testThatFindOneBookGeneratesCorrectSql(){
-        underTest.find("978-1-2345-6789-0");
+        underTest.findOne("978-1-2345-6789-0");
         verify(jdbcTemplate).query(
                 eq("SELECT isbn, title, author_id from books WHERE isbn = ? LIMIT 1"),
                 ArgumentMatchers.<BookDaoImpl.BookRowMapper>any(),
