@@ -1,4 +1,4 @@
-package com.sdas.databse.domain;
+package com.sdas.databse.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,18 +12,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Book {
+@Entity
+@Table(name="books")
+public class BookEntity {
 
+    @Id
     private String isbn;
 
     private String title;
 
-    private String author;
-
-    @JsonProperty("year")
-    private String yearPublished;
-
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "author_id")
+    private AuthorEntity authorEntity;
 
 
 
