@@ -4,6 +4,7 @@ package com.sdas.databse.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sdas.databse.TestDataUtil;
 import com.sdas.databse.domain.dto.BookDto;
+import com.sdas.databse.domain.entities.BookEntity;
 import com.sdas.databse.services.BookService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +64,39 @@ public class BookControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.isbn").value("978-1-2345-6789-0")
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.title").value("The Shadow in the Attic")
+        );
+    }
+    @Test
+    public void testThatListBooksReturnsHttpStatus200Ok() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+    @Test
+    public void testThatListBooksReturnsBook() throws Exception {
+        BookEntity testBookEntityA = TestDataUtil.createTestBookEntityA(null);
+        bookService.createBook(testBookEntityA.getIsbn(), testBookEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].isbn").value("978-1-2345-6789-0")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].title").value("The Shadow in the Attic")
+        );
+    }
+    @Test
+    public void testThatGetBookReturnsHttpStatus404WhenBookDoesntExist() throws Exception {
+        BookEntity testBookEntityA = TestDataUtil.createTestBookEntityA(null);
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/books/" + testBookEntityA.getIsbn())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
         );
     }
 
